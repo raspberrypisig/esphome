@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "command": "./run.sh",
+            "name": "upload esphome script to esp32",
+            "request": "launch",
+            "type": "node-terminal"
+        }
+    
+    ]
+
+}
