@@ -436,16 +436,30 @@ script:
                 id: menuIndex
                 value: "0"          
             - component.update: my_display
-
-
   - id: buttonSelect
     then:
       - if:
           condition:
-            lambda: |-
-              return id(pageNumber) == 0;
+            display.is_displaying_page: page0
           then:
             - script.execute: submenu_requested
+          else:
+            - script.execute: homeassistant_lightoff
+            - lambda: |-
+                ESP_LOGD("called", "called");
+            
+  - id: homeassistant_lightoff
+    then:
+      - lambda: |-
+          ESP_LOGD("called2", "called2");
+      - homeassistant.service:
+          service: light.turn_off
+          #variables:
+          #  lightentityid: !lambda |-
+          #    return "";
+          data:
+            entity_id: light.rgbw_e27_01
+
 
     
   
@@ -504,8 +518,7 @@ display:
     pages:
       - id: page0
         lambda: |-        
-          drawMyMenu(id(mainmenu));
-          //ESP_LOGD("currentmenusize", "%d", currentmenusize);
+          drawMyMenu(id(mainmenu));          
       - id: page1
         lambda: |-
           drawMyMenu(id(lightsoffmenu));
