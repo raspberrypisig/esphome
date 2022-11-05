@@ -1,0 +1,460 @@
+esphome:
+  name: ttgo-t-display
+  includes:
+    - ttgo-t-display-drawmenu.h
+    - ttgo-t-display.h
+  #libraries:
+  #  - ArduinoJson=6.18.5
+  platformio_options:
+    build_flags:
+      - -std=gnu++17
+    build_unflags:
+      - -std=gnu++11
+    
+substitutions:
+  boot_name: '"Fire Remote <3"'
+  friendly_name: "M5Fire Remote"
+  wifi_ssid: mycrib
+  wifi_password: peachspeak38
+  large_font_size: "24"
+  medium_font_size: "15"
+  small_font_size: "14"
+  icon_size: "18"
+  icon_size_large: "19"
+  header_height: "16"
+  margin_size: "4"
+  scroll_bar_width: "6"
+  bottom_bar_margin: "1"
+  now_playing_max_lines: "5"
+  draw_now_playing_menu: "false"
+  draw_battery_level: "true"
+  draw_volume_level: "false"
+  draw_shuffle_disabled: "false"
+  draw_header_time: "true"
+  color_accent_primary_red: 0%
+  color_accent_primary_green: 45%
+  color_accent_primary_blue: 68%
+  display_timeout: "10000"
+  sleep_after: "7200"
+  menu_rollover_on: "false"
+  sync_active_player: "true"
+  dark_mode: "true"
+
+#<<: !include esphomeRemote/sharedRemoteConfig.yaml
+
+#http_request:
+#  useragent: esphome/device
+#  timeout: 10s
+
+color:
+  - id: my_red
+    red: 100%
+    green: 0%
+    blue: 0%
+  - id: my_yellow
+    red: 100%
+    green: 75%
+    blue: 10%
+  - id: my_green
+    red: 0%
+    green: 100%
+    blue: 0%
+  - id: color_accent_primary
+    red: ${color_accent_primary_red}
+    green: ${color_accent_primary_green}
+    blue: ${color_accent_primary_blue}
+  - id: my_gray_dark
+    red: 40%
+    green: 40%
+    blue: 40%
+  - id: my_gray_dark_2
+    red: 8%
+    green: 8%
+    blue: 8%
+  - id: my_gray
+    red: 10%
+    green: 10%
+    blue: 10%
+  - id: my_black
+    red: 0%
+    green: 0%
+    blue: 0%
+  - id: my_white
+    red: 100%
+    green: 100%
+    blue: 100%
+
+font:
+## Font needs to be monospace!
+  - file: "fonts/iosevka.ttf"
+    id: large_font
+    size: ${large_font_size}
+    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+  - file: "fonts/iosevka.ttf"
+    id: medium_font
+    size: ${medium_font_size}
+    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+  - file: "fonts/iosevka.ttf"
+    id: small_font
+    size: ${small_font_size}
+    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+  - file: 'fonts/materialdesignicons-webfont.ttf' 
+    id: material_font_large
+    size: ${icon_size_large}
+    glyphs: [
+      '󰐊', # mdi-play
+      '󰓛', # mdi-stop
+      '󰏤', # home-pause
+      '󰽥', # mdi-moon-waning-crescent
+      '󰒝', # mdi-shuffle
+      '󰒞', # mdi-shuffle-disabled
+      '󰕾', # mdi-volume-high
+      '󰕿', # mdi-volume-low
+      '󰚺', # mdi-plex
+      '󰝆', # mdi-netflix
+      '󰗃', # mdi-youtube
+      '󰓇', # mdi-spotify
+      '󰔂', # mdi-television
+    ]  
+  - file: 'fonts/materialdesignicons-webfont.ttf' 
+    id: material_font_small
+    size: ${icon_size}
+    glyphs: [
+      '󰐊', # mdi-play
+      '󰓛', # mdi-stop
+      '󰏤', # home-pause
+      '󰽥', # mdi-moon-waning-crescent
+      '󰒝', # mdi-shuffle
+      '󰒞', # mdi-shuffle-disabled
+      '󰕾', # mdi-volume-high
+      '󰕿', # mdi-volume-low
+      '󰚺', # mdi-plex
+      '󰝆', # mdi-netflix
+      '󰗃', # mdi-youtube
+      '󰓇', # mdi-spotify
+      '󰔂', # mdi-television
+    ]
+    
+globals:
+## Size of the large font above
+  - id: large_font_size
+    type: int
+    restore_value: no
+    initial_value: ${large_font_size}
+    
+## Size of the medium font above
+  - id: medium_font_size
+    type: int
+    restore_value: no
+    initial_value: ${medium_font_size}
+    
+## Size of the small font above
+  - id: small_font_size
+    type: int
+    restore_value: no
+    initial_value: ${small_font_size}
+    
+## Height / width ratio of the monospace font used
+  - id: font_size_width_ratio
+    type: double
+    restore_value: no
+    initial_value: "0.6"
+    
+## Status bar height
+  - id: header_height
+    type: int
+    restore_value: no
+    initial_value: ${header_height}
+    
+## Global margin size
+  - id: margin_size
+    type: int
+    restore_value: no
+    initial_value: ${margin_size}
+    
+## Scrollbar total width
+  - id: scroll_bar_width
+    type: int
+    restore_value: no
+    initial_value: ${scroll_bar_width}
+    
+## Volume bar and media duration bar margin
+  - id: bottom_bar_margin
+    type: int
+    restore_value: no
+    initial_value: ${bottom_bar_margin}
+    
+## Height and width of the icons used in px
+  - id: icon_size
+    type: int
+    restore_value: no
+    initial_value: ${icon_size}
+    
+## Height and width of the icons used in px
+  - id: icon_size_large
+    type: int
+    restore_value: no
+    initial_value: ${icon_size_large}
+    
+## Max lines on now playing screen before truncating happens
+  - id: now_playing_max_lines
+    type: int
+    restore_value: no
+    initial_value: ${now_playing_max_lines}
+    
+## Draw buttons in now playing menu for 3 button devices
+  - id: draw_now_playing_menu
+    type: bool
+    restore_value: no
+    initial_value: ${draw_now_playing_menu}
+    
+## Draw battery icon if battery level is supported
+  - id: draw_battery_level
+    type: bool
+    restore_value: no
+    initial_value: ${draw_battery_level}
+    
+## Draw volume level in header
+  - id: draw_volume_level
+    type: bool
+    restore_value: no
+    initial_value: ${draw_volume_level}
+    
+## Draw shuffle icon if shuffle is disabled
+  - id: draw_shuffle_disabled
+    type: bool
+    restore_value: no
+    initial_value: ${draw_shuffle_disabled}
+    
+## Draw time in header
+  - id: draw_header_time
+    type: bool
+    restore_value: no
+    initial_value: ${draw_header_time}
+    
+## Customize device boot name
+  - id: boot_device_name
+    type: std::string
+    restore_value: no
+    initial_value: ${boot_name}
+
+## Turn off display after x seconds of idle
+  - id: display_timeout
+    type: int
+    restore_value: no
+    initial_value: ${display_timeout}
+
+## Go to sleep after x seconds of idle
+  - id: sleep_after
+    type: int
+    restore_value: no
+    initial_value: ${sleep_after}
+
+## Let the menu selection roll-over when reaching the beginning/end
+  - id: menu_rollover_on
+    type: bool
+    restore_value: no
+    initial_value: ${menu_rollover_on}
+
+## Find a new active media player if the current active one stops playing
+  - id: sync_active_player
+    type: bool
+    restore_value: no
+    initial_value: ${sync_active_player}
+
+## Black background
+  - id: dark_mode
+    type: bool
+    restore_value: no
+    initial_value: ${dark_mode}
+    
+  - id: menuIndex
+    type: int
+
+  - id: currentMenuSize
+    type: int
+    
+  - id: pageNumber
+    type: int
+      
+#interval:
+#  - interval: 1s
+#    then:
+#    - lambda: |-
+#        idleTick();
+#  - interval: 0.3s
+#    then:
+#    - lambda: |-
+#        activeTick();
+
+deep_sleep:
+  id: deep_sleep_1
+
+#binary_sensor:
+#  - platform: status
+#    name: "${boot_name} Node Status"
+#    id: system_status
+
+time:
+  - platform: homeassistant
+    id: esptime
+
+switch:
+  - platform: template
+    name: Sleep Toggle
+    id: sleep_toggle
+    optimistic: true
+    on_turn_on:
+      then:
+        - deep_sleep.enter:
+            id: deep_sleep_1
+  - platform: gpio
+    pin:
+      number: 27
+      inverted: false
+    id: comb
+    internal: true
+  - platform: gpio
+    pin:
+      number: 26
+      inverted: false
+    id: coma
+    internal: true
+  - platform: gpio
+    pin: GPIO4
+    name: "Backlight"
+    id: backlight
+    internal: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: "T-Display Button Input 0"
+    id: tdisplay_button_input_0
+    internal: true
+    on_press:
+      then:
+        - script.execute: nextMenuItem    
+  - platform: gpio
+    pin:
+      number: GPIO35
+      inverted: true
+    name: "T-Display Button Input 1"
+    id: tdisplay_button_input_1
+    internal: true
+    on_press:
+      then:
+      - script.execute: previousMenuItem
+
+esp32:
+  board: featheresp32
+  framework:
+    type: arduino
+    version: dev
+    platform_version: 5.2.0
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  id: homeassistantapi
+
+ota:
+
+wifi:
+  ssid: mycrib
+  password: peachspeak38
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Ttgo-T-Display Fallback Hotspot"
+    password: "5Z0OeWeAO03V"
+
+captive_portal:
+    
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+
+script:
+  - id: nextMenuItem
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return id(menuIndex) < id(currentMenuSize) - 1;
+          then:
+            - lambda: |-                                                
+                id(menuIndex)++;            
+            - component.update: my_display
+  - id: previousMenuItem
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return id(menuIndex) > 0;
+          then:
+            - lambda: |-                                                
+                id(menuIndex)--;            
+            - component.update: my_display
+
+  
+select:
+  - platform: template
+    name: "Main Menu"
+    id: mainmenu
+    optimistic: true
+    update_interval: never
+    options:
+      - Lights off
+      - Lights on
+      - Dummy
+  - platform: template
+    name: "Lights off Menu"
+    id: lightsoffmenu
+    optimistic: true
+    update_interval: never
+    options:
+      - All Lights
+      - Kitchen
+      - Rumpus
+  - platform: template
+    name: "Lights on Menu"
+    id: lightsonmenu
+    optimistic: true
+    update_interval: never
+    options:
+      - All Lights
+      - Kitchen
+      - Rumpus
+
+display:
+  - platform: st7789v
+    model: TTGO TDisplay 135x240
+    id: my_display
+    backlight_pin: GPIO4
+    cs_pin: GPIO5
+    dc_pin: GPIO16
+    reset_pin: GPIO23
+    rotation: 90°
+#   auto_clear_enabled: True
+#   update_interval: 5s
+    pages:
+      - id: page0
+        lambda: |-        
+          drawMyMenu(id(mainmenu));
+          //ESP_LOGD("currentmenusize", "%d", currentmenusize);
+      - id: page1
+        lambda: |-
+          drawMyMenu(id(lightsoffmenu));
+      - id: page2
+        lambda: |-
+          drawMyMenu(id(lightsonmenu));
+

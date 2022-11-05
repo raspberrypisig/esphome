@@ -1,0 +1,147 @@
+esphome:
+  name: ttgo-t-display
+  
+sensor:
+    
+
+
+## Battery
+  #- platform: adc
+  #  pin: 34
+  #  attenuation: 11db
+  #  name: "vccadc"
+  #  update_interval: 250ms
+  #  id: vcc_adc
+  #  internal: true
+    #on_value:
+    #  then:
+    #    lambda: |-
+    #      if (id(vcc_adc).state > 2.23) {
+    #        if (charging == false) {
+    #          charging = true;
+    #        }
+    #      } else {
+    #        if (charging == true) {
+    #          charging = false;
+    #        }
+    #      }
+    #      id(vcc_adc_avg).publish_state(id(vcc_adc).state);
+  - platform: template
+    id: vcc_adc_avg
+    filters:
+      - sliding_window_moving_average:
+          window_size: 4
+          send_every: 4
+    #on_value :
+    #  then:
+    #    - sensor.template.publish:
+    #        id: batteryVoltage
+    #        state: !lambda 'return id(vcc_adc).state;'
+  - platform: template
+    name: batteryVoltage
+    id: batteryVoltage
+    internal: true
+    unit_of_measurement: 'V'
+    #on_value :
+    #  then:
+    #    - sensor.template.publish:
+    #        id: batteryPercent
+    #        state: !lambda 'return (id(batteryVoltage).state * 118) - 162;'
+  - platform: template
+    name: Battery Percent
+    id: batteryPercent
+    unit_of_measurement: '%'
+    #on_value_range:
+    #  below: 5
+    #  then:
+    #    lambda: |-
+    #      ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(batteryPercent).state);
+    #      id(sleep_toggle).turn_on();
+
+switch:
+  - platform: gpio
+    pin:
+      number: 27
+      inverted: false
+    id: comb
+    internal: true
+  - platform: gpio
+    pin:
+      number: 26
+      inverted: false
+    id: coma
+    internal: true
+  - platform: gpio
+    pin: GPIO4
+    name: "Backlight"
+    id: backlight
+    internal: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: "T-Display Button Input 0"
+    id: tdisplay_button_input_0
+    internal: true
+   
+
+  - platform: gpio
+    pin:
+      number: GPIO35
+      inverted: true
+    name: "T-Display Button Input 1"
+    id: tdisplay_button_input_1
+    internal: true
+
+esp32:
+  board: featheresp32
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  id: homeassistantapi
+
+ota:
+
+wifi:
+  ssid: mycrib
+  password: peachspeak38
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Ttgo-T-Display Fallback Hotspot"
+    password: "5Z0OeWeAO03V"
+
+captive_portal:
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+
+font:
+  - file: 'arial.ttf'
+    id: font_arial_12
+    size: 12
+    
+
+display:
+  - platform: st7789v
+    model: TTGO TDisplay 135x240
+    id: my_display
+    backlight_pin: GPIO4
+    cs_pin: GPIO5
+    dc_pin: GPIO16
+    reset_pin: GPIO23
+    rotation: 90°
+    lambda: |-      
+      it.print(0, 0, id(font_arial_12), "Hello World!");
