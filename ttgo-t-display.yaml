@@ -445,13 +445,9 @@ script:
             - script.execute: submenu_requested
           else:
             - script.execute: homeassistant_lightoff
-            - lambda: |-
-                ESP_LOGD("called", "called");
             
   - id: homeassistant_lightoff
     then:
-      - lambda: |-
-          ESP_LOGD("called2", "called2");
       - homeassistant.service:
           service: light.turn_off
           variables:
@@ -459,9 +455,6 @@ script:
               return "light.rgbw_e27_01";
           data_template:
             entity_id: "{{ lightentityid }}"
-
-
-    
   
 select:
   - platform: template
