@@ -448,7 +448,12 @@ script:
             display.is_displaying_page: page1
           then:
             - script.execute: homeassistant_lightoff
-            
+      - if:
+          condition:
+            display.is_displaying_page: page2
+          then:
+            - script.execute: homeassistant_lighton
+
   - id: homeassistant_lightoff
     then:
       - homeassistant.service:
@@ -458,7 +463,17 @@ script:
               return id(lightsonentities).at(id(menuIndex)).value();
           data_template:
             entity_id: "{{ lightentityid }}"
-  
+
+  - id: homeassistant_lighton
+    then:
+      - homeassistant.service:
+          service: light.turn_on
+          variables:
+            lightentityid: !lambda |-
+              return id(lightsonentities).at(id(menuIndex)).value();
+          data_template:
+            entity_id: "{{ lightentityid }}"
+
 select:
   - platform: template
     name: "Main Menu"
