@@ -454,11 +454,11 @@ script:
           ESP_LOGD("called2", "called2");
       - homeassistant.service:
           service: light.turn_off
-          #variables:
-          #  lightentityid: !lambda |-
-          #    return "";
-          data:
-            entity_id: light.rgbw_e27_01
+          variables:
+            lightentityid: !lambda |-
+              return "light.rgbw_e27_01";
+          data_template:
+            entity_id: "{{ lightentityid }}"
 
 
     
