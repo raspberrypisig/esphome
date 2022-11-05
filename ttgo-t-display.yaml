@@ -350,7 +350,7 @@ binary_sensor:
     internal: true
     on_press:
       then:
-      - script.execute: previousMenuItem
+      - script.execute: buttonSelect
 
 esp32:
   board: featheresp32
@@ -404,7 +404,50 @@ script:
             - lambda: |-                                                
                 id(menuIndex)--;            
             - component.update: my_display
+  - id:  submenu_requested
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return id(menuIndex) == 0;
+          then:
+            - display.page.show: page1
+            - globals.set:
+                id: menuIndex
+                value: "0"
+            - component.update: my_display
+      - if:
+          condition:
+            lambda: |-
+              return id(menuIndex) == 1;
+          then:
+            - display.page.show: page2
+            - globals.set:
+                id: menuIndex
+                value: "0"          
+            - component.update: my_display
+      - if:
+          condition:
+            lambda: |-
+              return id(menuIndex) == 2;
+          then:
+            - display.page.show: page3
+            - globals.set:
+                id: menuIndex
+                value: "0"          
+            - component.update: my_display
 
+
+  - id: buttonSelect
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return id(pageNumber) == 0;
+          then:
+            - script.execute: submenu_requested
+
+    
   
 select:
   - platform: template
@@ -434,6 +477,18 @@ select:
       - All Lights
       - Kitchen
       - Rumpus
+  - platform: template
+    name: "Dummy Menu"
+    id: dummymenu
+    optimistic: true
+    update_interval: never
+    options:
+      - Dummy 1
+      - Dummy 2
+      - Dummy 3
+      - Dummy 4
+      - Dummy 5
+      - Dummy 6       
 
 display:
   - platform: st7789v
@@ -457,4 +512,7 @@ display:
       - id: page2
         lambda: |-
           drawMyMenu(id(lightsonmenu));
+      - id: page3
+        lambda: |-
+          drawMyMenu(id(dummymenu));          
 
