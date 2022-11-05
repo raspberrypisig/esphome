@@ -443,7 +443,10 @@ script:
             display.is_displaying_page: page0
           then:
             - script.execute: submenu_requested
-          else:
+      - if:
+          condition:
+            display.is_displaying_page: page1
+          then:
             - script.execute: homeassistant_lightoff
             
   - id: homeassistant_lightoff
