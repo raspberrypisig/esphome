@@ -69,6 +69,13 @@ script:
             - lambda: |-                                                
                 id(menuIndex)--;            
             - component.update: my_display
+  - id: update_display
+    then:
+      - globals.set:
+          id: menuIndex
+          value: "0"
+      - component.update: my_display
+
   - id:  submenu_requested
     then:
       - if:
@@ -77,30 +84,21 @@ script:
               return id(menuIndex) == 0;
           then:
             - display.page.show: page1
-            - globals.set:
-                id: menuIndex
-                value: "0"
-            - component.update: my_display
+            - script.execute: update_display
       - if:
           condition:
             lambda: |-
               return id(menuIndex) == 1;
           then:
             - display.page.show: page2
-            - globals.set:
-                id: menuIndex
-                value: "0"          
-            - component.update: my_display
+            - script.execute: update_display
       - if:
           condition:
             lambda: |-
               return id(menuIndex) == 2;
           then:
             - display.page.show: page3
-            - globals.set:
-                id: menuIndex
-                value: "0"          
-            - component.update: my_display
+            - script.execute: update_display
   - id: buttonSelect
     then:
       - if:
