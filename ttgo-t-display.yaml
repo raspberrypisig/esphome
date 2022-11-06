@@ -1,16 +1,49 @@
 esphome:
   name: ttgo-t-display
   includes:
-    - ttgo-t-display-drawmenu.h
-    - ttgo-t-display.h
-  #libraries:
-  #  - ArduinoJson=6.18.5
+    - esphomeremote/ttgo-t-display-drawmenu.h
+    - esphomeremote/ttgo-t-display.h
   platformio_options:
     build_flags:
       - -std=gnu++17
     build_unflags:
       - -std=gnu++11
+
+esp32:
+  board: featheresp32
+  framework:
+    type: arduino
+    version: dev
+    platform_version: 5.2.0
+
+packages:
+  extraconfig: !include esphomeremote/extraconfig.yaml
+  myconfig: !include esphomeremote/myconfig.yaml
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  id: homeassistantapi
+
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Ttgo-T-Display Fallback Hotspot"
+    password: "5Z0OeWeAO03V"
+
+captive_portal:
     
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+
 substitutions:
   boot_name: '"Fire Remote <3"'
   friendly_name: "M5Fire Remote"
@@ -40,100 +73,6 @@ substitutions:
   sync_active_player: "true"
   dark_mode: "true"
 
-#<<: !include esphomeRemote/sharedRemoteConfig.yaml
-
-#http_request:
-#  useragent: esphome/device
-#  timeout: 10s
-
-color:
-  - id: my_red
-    red: 100%
-    green: 0%
-    blue: 0%
-  - id: my_yellow
-    red: 100%
-    green: 75%
-    blue: 10%
-  - id: my_green
-    red: 0%
-    green: 100%
-    blue: 0%
-  - id: color_accent_primary
-    red: ${color_accent_primary_red}
-    green: ${color_accent_primary_green}
-    blue: ${color_accent_primary_blue}
-  - id: my_gray_dark
-    red: 40%
-    green: 40%
-    blue: 40%
-  - id: my_gray_dark_2
-    red: 8%
-    green: 8%
-    blue: 8%
-  - id: my_gray
-    red: 10%
-    green: 10%
-    blue: 10%
-  - id: my_black
-    red: 0%
-    green: 0%
-    blue: 0%
-  - id: my_white
-    red: 100%
-    green: 100%
-    blue: 100%
-
-font:
-## Font needs to be monospace!
-  - file: "fonts/iosevka.ttf"
-    id: large_font
-    size: ${large_font_size}
-    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
-  - file: "fonts/iosevka.ttf"
-    id: medium_font
-    size: ${medium_font_size}
-    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
-  - file: "fonts/iosevka.ttf"
-    id: small_font
-    size: ${small_font_size}
-    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
-  - file: 'fonts/materialdesignicons-webfont.ttf' 
-    id: material_font_large
-    size: ${icon_size_large}
-    glyphs: [
-      '󰐊', # mdi-play
-      '󰓛', # mdi-stop
-      '󰏤', # home-pause
-      '󰽥', # mdi-moon-waning-crescent
-      '󰒝', # mdi-shuffle
-      '󰒞', # mdi-shuffle-disabled
-      '󰕾', # mdi-volume-high
-      '󰕿', # mdi-volume-low
-      '󰚺', # mdi-plex
-      '󰝆', # mdi-netflix
-      '󰗃', # mdi-youtube
-      '󰓇', # mdi-spotify
-      '󰔂', # mdi-television
-    ]  
-  - file: 'fonts/materialdesignicons-webfont.ttf' 
-    id: material_font_small
-    size: ${icon_size}
-    glyphs: [
-      '󰐊', # mdi-play
-      '󰓛', # mdi-stop
-      '󰏤', # home-pause
-      '󰽥', # mdi-moon-waning-crescent
-      '󰒝', # mdi-shuffle
-      '󰒞', # mdi-shuffle-disabled
-      '󰕾', # mdi-volume-high
-      '󰕿', # mdi-volume-low
-      '󰚺', # mdi-plex
-      '󰝆', # mdi-netflix
-      '󰗃', # mdi-youtube
-      '󰓇', # mdi-spotify
-      '󰔂', # mdi-television
-    ]
     
 globals:
 ## Size of the large font above
@@ -325,7 +264,7 @@ switch:
     name: "Backlight"
     id: backlight
     internal: true
-    restore_mode: RESTORE_DEFAULT_ON
+    restore_mode: ALWAYS_ON
 
 binary_sensor:
   - platform: gpio
@@ -348,181 +287,13 @@ binary_sensor:
     name: "T-Display Button Input 1"
     id: tdisplay_button_input_1
     internal: true
+    #filters:
+    #  - delayed_on: 100ms
     on_press:
       then:
+      - lambda: |-
+          ESP_LOGD("buttonpress1", "pressed");
       - script.execute: buttonSelect
-
-esp32:
-  board: featheresp32
-  framework:
-    type: arduino
-    version: dev
-    platform_version: 5.2.0
-
-# Enable logging
-logger:
-
-# Enable Home Assistant API
-api:
-  id: homeassistantapi
-
-ota:
-
-wifi:
-  ssid: mycrib
-  password: peachspeak38
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "Ttgo-T-Display Fallback Hotspot"
-    password: "5Z0OeWeAO03V"
-
-captive_portal:
-    
-spi:
-  clk_pin: GPIO18
-  mosi_pin: GPIO19
-
-script:
-  - id: nextMenuItem
-    then:
-      - if:
-          condition:
-            lambda: |-
-              return id(menuIndex) < id(currentMenuSize) - 1;
-          then:
-            - lambda: |-                                                
-                id(menuIndex)++;            
-            - component.update: my_display
-  - id: previousMenuItem
-    then:
-      - if:
-          condition:
-            lambda: |-
-              return id(menuIndex) > 0;
-          then:
-            - lambda: |-                                                
-                id(menuIndex)--;            
-            - component.update: my_display
-  - id:  submenu_requested
-    then:
-      - if:
-          condition:
-            lambda: |-
-              return id(menuIndex) == 0;
-          then:
-            - display.page.show: page1
-            - globals.set:
-                id: menuIndex
-                value: "0"
-            - component.update: my_display
-      - if:
-          condition:
-            lambda: |-
-              return id(menuIndex) == 1;
-          then:
-            - display.page.show: page2
-            - globals.set:
-                id: menuIndex
-                value: "0"          
-            - component.update: my_display
-      - if:
-          condition:
-            lambda: |-
-              return id(menuIndex) == 2;
-          then:
-            - display.page.show: page3
-            - globals.set:
-                id: menuIndex
-                value: "0"          
-            - component.update: my_display
-  - id: buttonSelect
-    then:
-      - if:
-          condition:
-            display.is_displaying_page: page0
-          then:
-            - script.execute: submenu_requested
-      - if:
-          condition:
-            display.is_displaying_page: page1
-          then:
-            - script.execute: homeassistant_lightoff
-      - if:
-          condition:
-            display.is_displaying_page: page2
-          then:
-            - script.execute: homeassistant_lighton
-
-  - id: homeassistant_lightoff
-    then:
-      - homeassistant.service:
-          service: light.turn_off
-          variables:
-            lightentityid: !lambda |-
-              return id(lightsonentities).at(id(menuIndex)).value();
-          data_template:
-            entity_id: "{{ lightentityid }}"
-
-  - id: homeassistant_lighton
-    then:
-      - homeassistant.service:
-          service: light.turn_on
-          variables:
-            lightentityid: !lambda |-
-              return id(lightsonentities).at(id(menuIndex)).value();
-          data_template:
-            entity_id: "{{ lightentityid }}"
-
-select:
-  - platform: template
-    name: "Main Menu"
-    id: mainmenu
-    optimistic: true
-    update_interval: never
-    options:
-      - Lights off
-      - Lights on
-      - Dummy
-  - platform: template
-    name: "Lights off Menu"
-    id: lightsoffmenu
-    optimistic: true
-    update_interval: never
-    options:
-      - All Lights
-      - Kitchen
-      - Rumpus
-  - platform: template
-    name: "Lights on Menu"
-    id: lightsonmenu
-    optimistic: true
-    update_interval: never
-    options:
-      - All Lights
-      - Kitchen
-      - Rumpus
-  - platform: template
-    name: "Lights on entities"
-    id: lightsonentities
-    optimistic: true
-    update_interval: never
-    options:
-      - light.all_lights
-      - light.mirabella_2_light
-      - light.rgbw_e27_01     
-  - platform: template
-    name: "Dummy Menu"
-    id: dummymenu
-    optimistic: true
-    update_interval: never
-    options:
-      - Dummy 1
-      - Dummy 2
-      - Dummy 3
-      - Dummy 4
-      - Dummy 5
-      - Dummy 6       
 
 display:
   - platform: st7789v

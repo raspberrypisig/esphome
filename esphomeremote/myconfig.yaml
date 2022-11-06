@@ -1,0 +1,145 @@
+select:
+  - platform: template
+    name: "Main Menu"
+    id: mainmenu
+    optimistic: true
+    update_interval: never
+    options:
+      - Lights off
+      - Lights on
+      - Dummy
+  - platform: template
+    name: "Lights off Menu"
+    id: lightsoffmenu
+    optimistic: true
+    update_interval: never
+    options:
+      - All Lights
+      - Kitchen
+      - Rumpus
+  - platform: template
+    name: "Lights on Menu"
+    id: lightsonmenu
+    optimistic: true
+    update_interval: never
+    options:
+      - All Lights
+      - Kitchen
+      - Rumpus
+  - platform: template
+    name: "Lights on entities"
+    id: lightsonentities
+    optimistic: true
+    update_interval: never
+    options:
+      - light.all_lights
+      - light.mirabella_2_light
+      - light.rgbw_e27_01     
+  - platform: template
+    name: "Dummy Menu"
+    id: dummymenu
+    optimistic: true
+    update_interval: never
+    options:
+      - Dummy 1
+      - Dummy 2
+      - Dummy 3
+      - Dummy 4
+      - Dummy 5
+      - Dummy 6       
+
+script:
+  - id: nextMenuItem
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return id(menuIndex) < id(currentMenuSize) - 1;
+          then:
+            - lambda: |-                                                
+                id(menuIndex)++;            
+            - component.update: my_display
+  - id: previousMenuItem
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return id(menuIndex) > 0;
+          then:
+            - lambda: |-                                                
+                id(menuIndex)--;            
+            - component.update: my_display
+  - id:  submenu_requested
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return id(menuIndex) == 0;
+          then:
+            - display.page.show: page1
+            - globals.set:
+                id: menuIndex
+                value: "0"
+            - component.update: my_display
+      - if:
+          condition:
+            lambda: |-
+              return id(menuIndex) == 1;
+          then:
+            - display.page.show: page2
+            - globals.set:
+                id: menuIndex
+                value: "0"          
+            - component.update: my_display
+      - if:
+          condition:
+            lambda: |-
+              return id(menuIndex) == 2;
+          then:
+            - display.page.show: page3
+            - globals.set:
+                id: menuIndex
+                value: "0"          
+            - component.update: my_display
+  - id: buttonSelect
+    then:
+      - if:
+          condition:
+            display.is_displaying_page: page1
+          then:
+            - script.execute: homeassistant_lightoff
+      - if:
+          condition:
+            display.is_displaying_page: page2
+          then:
+            - script.execute: homeassistant_lighton
+      # This needs to be evaluated last in this last
+      # ,additional actions should be before this line
+      - if:
+          condition:
+            display.is_displaying_page: page0
+          then:
+            - lambda: |-
+                ESP_LOGD("buttonSelect", "pressed going to page 0");
+            - script.execute: submenu_requested
+
+  - id: homeassistant_lightoff
+    then:
+      - homeassistant.service:
+          service: light.turn_off
+          variables:
+            lightentityid: !lambda |-
+              return id(lightsonentities).at(id(menuIndex)).value();
+          data_template:
+            entity_id: "{{ lightentityid }}"
+
+  - id: homeassistant_lighton
+    then:
+      - homeassistant.service:
+          service: light.turn_on
+          variables:
+            lightentityid: !lambda |-
+              return id(lightsonentities).at(id(menuIndex)).value();
+          data_template:
+            entity_id: "{{ lightentityid }}"
+
