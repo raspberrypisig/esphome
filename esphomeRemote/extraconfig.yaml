@@ -166,12 +166,6 @@ globals:
     restore_value: no
     initial_value: ${menu_rollover_on}
 
-## Find a new active media player if the current active one stops playing
-  - id: sync_active_player
-    type: bool
-    restore_value: no
-    initial_value: ${sync_active_player}
-
 ## Black background
   - id: dark_mode
     type: bool
