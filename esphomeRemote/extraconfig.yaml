@@ -86,3 +86,96 @@ font:
       '󰓇', # mdi-spotify
       '󰔂', # mdi-television
     ]
+
+globals:
+## Size of the large font above
+  - id: large_font_size
+    type: int
+    restore_value: no
+    initial_value: ${large_font_size}
+    
+## Size of the medium font above
+  - id: medium_font_size
+    type: int
+    restore_value: no
+    initial_value: ${medium_font_size}
+    
+## Size of the small font above
+  - id: small_font_size
+    type: int
+    restore_value: no
+    initial_value: ${small_font_size}
+    
+## Height / width ratio of the monospace font used
+  - id: font_size_width_ratio
+    type: double
+    restore_value: no
+    initial_value: "0.6"
+    
+## Status bar height
+  - id: header_height
+    type: int
+    restore_value: no
+    initial_value: ${header_height}
+    
+## Global margin size
+  - id: margin_size
+    type: int
+    restore_value: no
+    initial_value: ${margin_size}
+    
+## Scrollbar total width
+  - id: scroll_bar_width
+    type: int
+    restore_value: no
+    initial_value: ${scroll_bar_width}
+    
+## Volume bar and media duration bar margin
+  - id: bottom_bar_margin
+    type: int
+    restore_value: no
+    initial_value: ${bottom_bar_margin}
+    
+## Height and width of the icons used in px
+  - id: icon_size
+    type: int
+    restore_value: no
+    initial_value: ${icon_size}
+    
+## Height and width of the icons used in px
+  - id: icon_size_large
+    type: int
+    restore_value: no
+    initial_value: ${icon_size_large}
+    
+## Turn off display after x seconds of idle
+  - id: display_timeout
+    type: int
+    restore_value: no
+    initial_value: ${display_timeout}
+
+## Go to sleep after x seconds of idle
+  - id: sleep_after
+    type: int
+    restore_value: no
+    initial_value: ${sleep_after}
+
+## Let the menu selection roll-over when reaching the beginning/end
+  - id: menu_rollover_on
+    type: bool
+    restore_value: no
+    initial_value: ${menu_rollover_on}
+
+## Find a new active media player if the current active one stops playing
+  - id: sync_active_player
+    type: bool
+    restore_value: no
+    initial_value: ${sync_active_player}
+
+## Black background
+  - id: dark_mode
+    type: bool
+    restore_value: no
+    initial_value: ${dark_mode}
+    
+
