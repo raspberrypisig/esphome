@@ -145,6 +145,7 @@ binary_sensor:
       - lambda: |-
           ESP_LOGD("buttonpress1", "pressed");
       - script.execute: buttonSelect
+      #- script.execute: previousMenuItem
 
 display:
   - platform: st7789v
