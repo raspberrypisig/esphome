@@ -59,6 +59,16 @@ script:
             - lambda: |-                                                
                 id(menuIndex)++;            
             - component.update: my_display
+          else:
+            - if:
+                condition:
+                  lambda: |-
+                    return id(menu_rollover_on);
+                then:
+                  - lambda: |-
+                      id(menuIndex) = 0;
+                  - component.update: my_display
+
   - id: previousMenuItem
     then:
       - if:
@@ -69,6 +79,16 @@ script:
             - lambda: |-                                                
                 id(menuIndex)--;            
             - component.update: my_display
+          else:
+            - if:
+                condition:
+                  lambda: |-
+                    return id(menu_rollover_on);
+                then:
+                  - lambda: |-
+                      id(menuIndex) = id(currentMenuSize) - 1;
+                  - component.update: my_display
+                
   - id: update_display
     then:
       - globals.set:

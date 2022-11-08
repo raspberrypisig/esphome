@@ -166,7 +166,7 @@ globals:
     restore_value: no
     initial_value: ${menu_rollover_on}
 
-## Black background
+# Black background
   - id: dark_mode
     type: bool
     restore_value: no

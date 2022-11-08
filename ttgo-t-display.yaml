@@ -59,7 +59,7 @@ substitutions:
   color_accent_primary_blue: 68%
   display_timeout: "10000"
   sleep_after: "7200"
-  menu_rollover_on: "false"
+  menu_rollover_on: "true"
   dark_mode: "true"
 
 globals:
@@ -69,9 +69,6 @@ globals:
   - id: currentMenuSize
     type: int
     
-  - id: pageNumber
-    type: int
-
 #interval:
 #  - interval: 1s
 #    then:
@@ -143,8 +140,6 @@ binary_sensor:
     name: "T-Display Button Input 1"
     id: tdisplay_button_input_1
     internal: true
-    #filters:
-    #  - delayed_on: 100ms
     on_press:
       then:
       - lambda: |-
